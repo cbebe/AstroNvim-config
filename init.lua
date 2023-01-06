@@ -75,6 +75,7 @@ local config = {
 	},
 	plugins = {
 		init = {
+			["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
 			"catppuccin/nvim",
 			"lambdalisue/suda.vim",
 			"sbdchd/neoformat",
@@ -86,25 +87,25 @@ local config = {
 			"ggandor/leap.nvim",
 			"dstein64/vim-startuptime",
 			"opdavies/toggle-checkbox.nvim",
-			"lewis6991/hover.nvim"
+			"lewis6991/hover.nvim",
 		},
 		treesitter = {
 			-- Add languages to be installed here that you want installed for treesitter
-			ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'typescript', 'help' },
+			ensure_installed = { "c", "cpp", "go", "lua", "python", "rust", "typescript", "help" },
 			auto_install = true,
 			matchup = {
 				enable = true,
 			},
 
 			highlight = { enable = true },
-			indent = { enable = true, disable = { 'python' } },
+			indent = { enable = true, disable = { "python" } },
 			incremental_selection = {
 				enable = true,
 				keymaps = {
-					init_selection = '<CR>',
-					scope_incremental = '<CR>',
-					node_incremental = '<TAB>',
-					node_decremental = '<S-TAB>',
+					init_selection = "<cr>",
+					scope_incremental = "<tab>",
+					node_incremental = "<cr>",
+					node_decremental = "<s-tab>",
 				},
 			},
 			textobjects = {
@@ -113,46 +114,45 @@ local config = {
 					lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
 					keymaps = {
 						-- You can use the capture groups defined in textobjects.scm
-						['aa'] = '@parameter.outer',
-						['ia'] = '@parameter.inner',
-						['af'] = '@function.outer',
-						['if'] = '@function.inner',
-						['ac'] = '@class.outer',
-						['ic'] = '@class.inner',
+						["aa"] = "@parameter.outer",
+						["ia"] = "@parameter.inner",
+						["af"] = "@function.outer",
+						["if"] = "@function.inner",
+						["ac"] = "@class.outer",
+						["ic"] = "@class.inner",
 					},
 				},
 				move = {
 					enable = true,
 					set_jumps = true, -- whether to set jumps in the jumplist
 					goto_next_start = {
-						[']m'] = '@function.outer',
-						[']]'] = '@class.outer',
+						["]m"] = "@function.outer",
+						["]]"] = "@class.outer",
 					},
 					goto_next_end = {
-						[']M'] = '@function.outer',
-						[']['] = '@class.outer',
+						["]M"] = "@function.outer",
+						["]["] = "@class.outer",
 					},
 					goto_previous_start = {
-						['[m'] = '@function.outer',
-						['[['] = '@class.outer',
+						["[m"] = "@function.outer",
+						["[["] = "@class.outer",
 					},
 					goto_previous_end = {
-						['[M'] = '@function.outer',
-						['[]'] = '@class.outer',
+						["[M"] = "@function.outer",
+						["[]"] = "@class.outer",
 					},
 				},
 				swap = {
 					enable = true,
 					swap_next = {
-						['<leader>a'] = '@parameter.inner',
+						["<leader>a"] = "@parameter.inner",
 					},
 					swap_previous = {
-						['<leader>A'] = '@parameter.inner',
+						["<leader>A"] = "@parameter.inner",
 					},
 				},
 			},
-		}
-
+		},
 	},
 	updater = {
 		-- get nightly updates
@@ -226,13 +226,6 @@ local config = {
 			callback = function() vim.keymap.set("n", "<leader>G", "<cmd>!go run %<cr>") end,
 		})
 
-		if vim.loop.os_uname().sysname == "Windows_NT" then
-			-- nushell
-			vim.keymap.set("n", "<leader>tt", "<cmd>terminal<cr>inu<cr>")
-		else
-			vim.keymap.set("n", "<leader>tt", "<cmd>terminal<cr>i")
-		end
-
 		local leap_ok, leap = pcall(require, "leap")
 		if leap_ok then leap.add_default_mappings() end
 		vim.g.suda_smart_edit = 1
@@ -257,7 +250,7 @@ local config = {
 		vim.g.neoformat_enabled_javascriptreact = { "denofmt" }
 		vim.g.neoformat_enabled_markdown = { "denofmt" }
 		vim.g.neoformat_enabled_json = { "denofmt" }
-	end
+	end,
 }
 
 return config
