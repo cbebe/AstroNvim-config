@@ -54,10 +54,6 @@ local mappings = {
 			desc = "Run Neoformat on current buffer"
 		},
 		["<leader>ss"] = { '<cmd>let @/ = ""<cr>', desc = "Clear search" },
-		["<leader><leader>"] = {
-			toggle_checkbox.toggle,
-			desc = "Toggle checkbox"
-		},
 		["<C-d>"] = { "<C-d>zz" },
 		["<C-u>"] = { "<C-u>zz" },
 
@@ -139,6 +135,15 @@ local function polish()
 	end)
 	CreateTrailingCmd("BufWinLeave", match_group,
 		function() vim.cmd [[ call clearmatches() ]] end)
+
+	-- TODO: Add these in ftplugin
+	vim.api.nvim_create_autocmd("BufWinEnter", {
+		desc = "Toggle checkbox",
+		pattern = "*.md",
+		callback = function()
+			vim.keymap.set("n", "<leader><leader>", toggle_checkbox.toggle)
+		end
+	})
 
 	vim.api.nvim_create_autocmd("BufWinEnter", {
 		desc = "Do nvim-nu setup",
