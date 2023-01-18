@@ -394,7 +394,7 @@ local plugins = {
 		"lewis6991/hover.nvim",
 
 		"nvim-treesitter/playground",
-		"nvim-treesitter/nvim-treesitter-angular",
+		-- "nvim-treesitter/nvim-treesitter-angular",
 		"nkrkv/nvim-treesitter-rescript",
 		["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
 		["LhKipp/nvim-nu"] = { ft = "nu" }
