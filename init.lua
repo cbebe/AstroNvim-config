@@ -82,6 +82,12 @@ local mappings = {
 
 local function polish()
 	-- Set autocommands
+	vim.api.nvim_create_user_command('OrganizeImports', function()
+		vim.lsp.buf.execute_command({
+			command = "_typescript.organizeImports",
+			arguments = { vim.fn.expand("%:p") },
+		})
+	end, { nargs = 0 })
 	vim.api.nvim_create_augroup("ShowDiagnostics", {})
 	vim.api.nvim_create_autocmd("CursorHold,CursorHoldI", {
 		desc = "Show line diagnostics automatically in hover window",
@@ -157,6 +163,13 @@ local function polish()
 		pattern = "*.go",
 		callback = function()
 			vim.keymap.set("n", "<leader>G", "<cmd>!go run %<cr>")
+		end
+	})
+
+	vim.api.nvim_create_autocmd("BufWinEnter", {
+		desc = "Foldmethod",
+		callback = function()
+			vim.opt.foldmethod = "marker"
 		end
 	})
 
