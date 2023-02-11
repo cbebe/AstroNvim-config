@@ -376,10 +376,9 @@ local plugin_heirline = function(config)
 			-- add a navigation component and just display the percentage of progress in the file
 			astronvim.status.component.nav {
 				-- add some padding for the percentage provider
-				percentage = { padding = { right = 1 } },
+				percentage = { padding = { left = 1 } },
 				-- disable all other providers
-				ruler = false,
-				scrollbar = false,
+				ruler = { padding = { left = 1 } },
 				-- use no separator and define the background color
 				surround = { separator = "none", color = "file_info_bg" },
 			},
