@@ -199,6 +199,8 @@ local function polish()
 	vim.g.neoformat_enabled_javascriptreact = { "denofmt" }
 	vim.g.neoformat_enabled_markdown = { "denofmt" }
 	vim.g.neoformat_enabled_json = { "denofmt" }
+
+	require("telescope").load_extension("emoji")
 end
 
 local textobjects = {
@@ -394,23 +396,30 @@ local plugin_heirline = function(config)
 end
 
 local plugins = {
-	init = {
-		"catppuccin/nvim",
-		"lambdalisue/suda.vim",
-		"sbdchd/neoformat",
-		"ThePrimeagen/vim-be-good",
-		"APZelos/blamer.nvim",
-		"ggandor/leap.nvim",
-		"dstein64/vim-startuptime",
-		"opdavies/toggle-checkbox.nvim",
-		"lewis6991/hover.nvim",
+	init = function(default_plugins)
+		local my_plugins = {
+			"xiyaowong/telescope-emoji.nvim",
+			"catppuccin/nvim",
+			"lambdalisue/suda.vim",
+			"sbdchd/neoformat",
+			"ThePrimeagen/vim-be-good",
+			"APZelos/blamer.nvim",
+			"ggandor/leap.nvim",
+			"dstein64/vim-startuptime",
+			"opdavies/toggle-checkbox.nvim",
+			"lewis6991/hover.nvim",
 
-		"nvim-treesitter/playground",
-		-- "nvim-treesitter/nvim-treesitter-angular",
-		"nkrkv/nvim-treesitter-rescript",
-		["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
-		["LhKipp/nvim-nu"] = { ft = "nu" }
-	},
+			"nvim-treesitter/playground",
+			"nkrkv/nvim-treesitter-rescript",
+			["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
+			["LhKipp/nvim-nu"] = { ft = "nu" }
+		}
+
+		-- Disable until it's fixed ig
+		default_plugins["Darazaki/indent-o-matic"] = nil
+
+		return vim.tbl_deep_extend("force", default_plugins, my_plugins)
+	end,
 	treesitter = treesitter,
 	heirline = plugin_heirline
 }
