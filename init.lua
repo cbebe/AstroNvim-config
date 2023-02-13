@@ -129,7 +129,7 @@ local function polish()
 	end
 
 	local match_group = vim.api.nvim_create_augroup("MatchTrailing",
-		{ clear = true })
+			{ clear = true })
 	CreateTrailingCmd("BufWinEnter", match_group, function()
 		vim.cmd [[ match ExtraWhitespace /\s\+$/ ]]
 	end)
@@ -221,8 +221,8 @@ local textobjects = {
 	move = {
 		set_jumps = true,
 		enable = true, -- whether to set jumps in the jumplist
-		goto_next_start = { ["]m"] = "@function.outer", ["]]"] = "@class.outer" },
-		goto_next_end = { ["]M"] = "@function.outer", ["]["] = "@class.outer" },
+		goto_next_start = { ["]m"] = "@function.outer",["]]"] = "@class.outer" },
+		goto_next_end = { ["]M"] = "@function.outer",["]["] = "@class.outer" },
 		goto_previous_start = {
 			["[m"] = "@function.outer",
 			["[["] = "@class.outer"
@@ -264,7 +264,6 @@ local treesitter = {
 		"c", "cpp", "go", "lua", "python", "rust", "typescript", "help"
 	},
 	matchup = { enable = true },
-
 	highlight = { enable = true },
 	indent = { enable = true, disable = { "python" } },
 	incremental_selection = {
@@ -408,7 +407,6 @@ local plugins = {
 			"dstein64/vim-startuptime",
 			"opdavies/toggle-checkbox.nvim",
 			"lewis6991/hover.nvim",
-
 			"nvim-treesitter/playground",
 			"nkrkv/nvim-treesitter-rescript",
 			["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
