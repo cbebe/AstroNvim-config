@@ -34,8 +34,8 @@ local function printDate()
 	vim.api.nvim_set_current_line(nline)
 end
 
-local ok, install = pcall(require, "nvim-treesitter.install")
-if ok then install.compilers = { "gcc" } end
+local ts_install, install = pcall(require, "nvim-treesitter.install")
+if ts_install then install.compilers = { "gcc" } end
 
 local mappings = {
 	n = {
@@ -98,17 +98,20 @@ local function polish()
 		end
 	})
 
-	require("notify").setup { background_colour = "#000000" }
+	local notify_ok, notify = pcall(require, "notify")
+	if notify_ok then
+		pcall(notify.setup, { background_colour = "#000000" })
+	end
 
 	vim.o.updatetime = 250
 
 	-- Make background transparent
-	-- vim.cmd [[
-	--           highlight Normal ctermbg=none
-	--           highlight NonText ctermbg=none
-	--           highlight Normal guibg=none
-	--           highlight NonText guibg=none
-	--       ]]
+	vim.cmd [[
+		highlight Normal ctermbg=none
+		highlight NonText ctermbg=none
+		highlight Normal guibg=none
+		highlight NonText guibg=none
+	]]
 
 	vim.cmd [[ highlight ExtraWhitespace ctermbg=red guibg=red ]]
 
@@ -154,7 +157,12 @@ local function polish()
 	vim.api.nvim_create_autocmd("BufWinEnter", {
 		desc = "Do nvim-nu setup",
 		pattern = "*.nu",
-		callback = function() require("nu").setup {} end
+		callback = function()
+			local nu_ok, nu = pcall(require, "nu")
+			if nu_ok then
+				nu.setup {}
+			end
+		end
 	})
 
 	-- Run go
@@ -200,7 +208,10 @@ local function polish()
 	vim.g.neoformat_enabled_markdown = { "denofmt" }
 	vim.g.neoformat_enabled_json = { "denofmt" }
 
-	require("telescope").load_extension("emoji")
+	local telescope_ok, telescope = pcall(require, "telescope")
+	if telescope_ok then
+		pcall(telescope.load_extension, "emoji")
+	end
 end
 
 local textobjects = {
@@ -405,7 +416,7 @@ local plugins = {
 			"APZelos/blamer.nvim",
 			"ggandor/leap.nvim",
 			"dstein64/vim-startuptime",
-			"opdavies/toggle-checkbox.nvim",
+			["opdavies/toggle-checkbox.nvim"] = { ft = "markdown" },
 			"lewis6991/hover.nvim",
 			"nvim-treesitter/playground",
 			"nkrkv/nvim-treesitter-rescript",
@@ -421,6 +432,7 @@ local plugins = {
 						},
 					}
 				end,
+				ft = "norg",
 				run = ":Neorg sync-parsers",
 				requires = "nvim-lua/plenary.nvim",
 			},
