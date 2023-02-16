@@ -410,7 +410,20 @@ local plugins = {
 			"nvim-treesitter/playground",
 			"nkrkv/nvim-treesitter-rescript",
 			["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
-			["LhKipp/nvim-nu"] = { ft = "nu" }
+			["LhKipp/nvim-nu"] = { ft = "nu" },
+			["nvim-neorg/neorg"] = {
+				config = function()
+					require('neorg').setup {
+						load = {
+							["core.defaults"] = {}, -- Loads default behaviour
+							["core.norg.concealer"] = {}, -- Adds pretty icons to your documents
+							["core.norg.dirman"] = { config = { workspaces = { notes = "~/notes" } } }, -- Manages Neorg workspaces
+						},
+					}
+				end,
+				run = ":Neorg sync-parsers",
+				requires = "nvim-lua/plenary.nvim",
+			},
 		}
 
 		-- Disable until it's fixed ig
