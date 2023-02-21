@@ -12,7 +12,7 @@ local header = {
 	"      ██╔██╗ ██║██║   ██║██║██╔████╔██║",
 	"      ██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║",
 	"      ██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║",
-	"      ╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝"
+	"      ╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝",
 }
 
 -- Fully embracing AstroNvim
@@ -24,7 +24,6 @@ if vim.loop.os_uname().sysname == "Windows_NT" then
 end
 
 local hover_ok, hover = pcall(require, "hover")
-local _, toggle_checkbox = pcall(require, "toggle-checkbox")
 
 local function printDate()
 	local pos = vim.api.nvim_win_get_cursor(0)[2]
@@ -46,12 +45,12 @@ local mappings = {
 
 		["<leader>E"] = {
 			"<cmd>e " .. vim.g.user_init_lua .. "<cr>",
-			desc = "Edit user configuration"
+			desc = "Edit user configuration",
 		},
 		["<leader>D"] = { printDate, desc = "Print date" },
 		["<leader>F"] = {
 			"<cmd>Neoformat<cr><cr>",
-			desc = "Run Neoformat on current buffer"
+			desc = "Run Neoformat on current buffer",
 		},
 		["<leader>ss"] = { '<cmd>let @/ = ""<cr>', desc = "Clear search" },
 		["<C-d>"] = { "<C-d>zz" },
@@ -59,49 +58,65 @@ local mappings = {
 
 		["<leader>fl"] = {
 			"<cmd>cd %:p:h<cr>",
-			desc = "Change current directory to the file in the buffer"
+			desc = "Change current directory to the file in the buffer",
 		},
 		["<leader>tt"] = { vim.g.user_terminal_cmd, desc = "Open terminal" },
 		["<leader>rs"] = {
 			[[<cmd>let _s=@/ | %s/\s\+$//e | let @/=_s | nohl | unlet _s<cr>]],
-			desc = "Remove all trailing whitespace"
-		}
+			desc = "Remove all trailing whitespace",
+		},
 	},
 	v = {
 		["<leader>jj"] = {
 			"<cmd>% !jq .<cr>",
-			desc = "Pretty-print highlighted JSON"
+			desc = "Pretty-print highlighted JSON",
 		},
 		["<leader>jc"] = {
 			"<cmd>% !jq -c .<cr><cr>",
-			desc = "Minify highlighted JSON"
-		}
+			desc = "Minify highlighted JSON",
+		},
 	},
-	t = { ["<esc><esc>"] = { "<C-\\><C-n>" } }
+	t = { ["<esc><esc>"] = { "<C-\\><C-n>" } },
 }
 
 local function polish()
 	-- Set autocommands
-	vim.api.nvim_create_user_command('OrganizeImports', function()
-		vim.lsp.buf.execute_command({
-			command = "_typescript.organizeImports",
-			arguments = { vim.fn.expand("%:p") },
-		})
-	end, { nargs = 0 })
+	vim.api.nvim_create_user_command(
+		"OrganizeImports",
+		function()
+			vim.lsp.buf.execute_command {
+				command = "_typescript.organizeImports",
+				arguments = { vim.fn.expand "%:p" },
+			}
+		end,
+		{ nargs = 0 }
+	)
 	vim.api.nvim_create_augroup("ShowDiagnostics", {})
 	vim.api.nvim_create_autocmd("CursorHold,CursorHoldI", {
 		desc = "Show line diagnostics automatically in hover window",
 		group = "ShowDiagnostics",
 		pattern = "*",
-		callback = function()
-			vim.diagnostic.open_float(nil, { focus = false })
-		end
+		callback = function() vim.diagnostic.open_float(nil, { focus = false }) end,
 	})
 
-	local notify_ok, notify = pcall(require, "notify")
-	if notify_ok then
-		pcall(notify.setup, { background_colour = "#000000" })
+	local neorg_ok, neorg = pcall(require, "neorg")
+	if neorg_ok then
+		neorg.setup {
+			load = {
+				["core.defaults"] = {}, -- Loads default behaviour
+				["core.norg.concealer"] = {}, -- Adds pretty icons to your documents
+				["core.norg.dirman"] = {
+					config = {
+						workspaces = { notes = "~/notes" },
+						default_workspace = "notes",
+					},
+				}, -- Manages Neorg workspaces
+			},
+		}
 	end
+
+	local notify_ok, notify = pcall(require, "notify")
+	if notify_ok then pcall(notify.setup, { background_colour = "#000000" }) end
 
 	vim.o.updatetime = 250
 
@@ -127,31 +142,24 @@ local function polish()
 			desc = desc,
 			group = group,
 			pattern = "*",
-			callback = callback
+			callback = callback,
 		})
 	end
 
-	local match_group = vim.api.nvim_create_augroup("MatchTrailing",
-			{ clear = true })
-	CreateTrailingCmd("BufWinEnter", match_group, function()
-		vim.cmd [[ match ExtraWhitespace /\s\+$/ ]]
-	end)
-	CreateTrailingCmd("InsertEnter", match_group, function()
-		vim.cmd [[ match ExtraWhitespace /\s\+\%#\@<!$/ ]]
-	end)
-	CreateTrailingCmd("InsertLeave", match_group, function()
-		vim.cmd [[ match ExtraWhitespace /\s\+$/ ]]
-	end)
-	CreateTrailingCmd("BufWinLeave", match_group,
-		function() vim.cmd [[ call clearmatches() ]] end)
+	local match_group = vim.api.nvim_create_augroup("MatchTrailing", { clear = true })
+	CreateTrailingCmd("BufWinEnter", match_group, function() vim.cmd [[ match ExtraWhitespace /\s\+$/ ]] end)
+	CreateTrailingCmd("InsertEnter", match_group, function() vim.cmd [[ match ExtraWhitespace /\s\+\%#\@<!$/ ]] end)
+	CreateTrailingCmd("InsertLeave", match_group, function() vim.cmd [[ match ExtraWhitespace /\s\+$/ ]] end)
+	CreateTrailingCmd("BufWinLeave", match_group, function() vim.cmd [[ call clearmatches() ]] end)
 
 	-- TODO: Add these in ftplugin
 	vim.api.nvim_create_autocmd("BufWinEnter", {
 		desc = "Toggle checkbox",
 		pattern = "*.md",
 		callback = function()
-			vim.keymap.set("n", "<leader><leader>", toggle_checkbox.toggle)
-		end
+			local toggle_checkbox_ok, toggle_checkbox = pcall(require, "toggle-checkbox")
+			if toggle_checkbox_ok then vim.keymap.set("n", "<leader><leader>", toggle_checkbox.toggle) end
+		end,
 	})
 
 	vim.api.nvim_create_autocmd("BufWinEnter", {
@@ -159,10 +167,8 @@ local function polish()
 		pattern = "*.nu",
 		callback = function()
 			local nu_ok, nu = pcall(require, "nu")
-			if nu_ok then
-				nu.setup {}
-			end
-		end
+			if nu_ok then nu.setup {} end
+		end,
 	})
 
 	-- Run go
@@ -170,15 +176,9 @@ local function polish()
 		desc = "Run go file",
 		pattern = "*.go",
 		callback = function()
-			vim.keymap.set("n", "<leader>G", "<cmd>!go run %<cr>")
-		end
-	})
-
-	vim.api.nvim_create_autocmd("BufWinEnter", {
-		desc = "Foldmethod",
-		callback = function()
 			vim.opt.foldmethod = "marker"
-		end
+			vim.keymap.set("n", "<leader>G", "<cmd>!go run %<cr>")
+		end,
 	})
 
 	local leap_ok, leap = pcall(require, "leap")
@@ -189,13 +189,11 @@ local function polish()
 		hover.setup {
 			init = function()
 				local lsp_ok, _ = pcall(require, "hover.providers.lsp")
-				if not lsp_ok then
-					print "hover failed to provide lsp"
-				end
+				if not lsp_ok then print "hover failed to provide lsp" end
 			end,
 			preview_opts = { border = nil },
 			preview_window = false,
-			title = true
+			title = true,
 		}
 	end
 	vim.g.blamer_delay = 500
@@ -209,9 +207,7 @@ local function polish()
 	vim.g.neoformat_enabled_json = { "denofmt" }
 
 	local telescope_ok, telescope = pcall(require, "telescope")
-	if telescope_ok then
-		pcall(telescope.load_extension, "emoji")
-	end
+	if telescope_ok then pcall(telescope.load_extension, "emoji") end
 end
 
 local textobjects = {
@@ -226,28 +222,28 @@ local textobjects = {
 			["af"] = "@function.outer",
 			["if"] = "@function.inner",
 			["ac"] = "@class.outer",
-			["ic"] = "@class.inner"
-		}
+			["ic"] = "@class.inner",
+		},
 	},
 	move = {
 		set_jumps = true,
 		enable = true, -- whether to set jumps in the jumplist
-		goto_next_start = { ["]m"] = "@function.outer",["]]"] = "@class.outer" },
-		goto_next_end = { ["]M"] = "@function.outer",["]["] = "@class.outer" },
+		goto_next_start = { ["]m"] = "@function.outer", ["]]"] = "@class.outer" },
+		goto_next_end = { ["]M"] = "@function.outer", ["]["] = "@class.outer" },
 		goto_previous_start = {
 			["[m"] = "@function.outer",
-			["[["] = "@class.outer"
+			["[["] = "@class.outer",
 		},
 		goto_previous_end = {
 			["[M"] = "@function.outer",
-			["[]"] = "@class.outer"
-		}
+			["[]"] = "@class.outer",
+		},
 	},
 	swap = {
 		enable = true,
 		swap_next = { ["<leader>a"] = "@parameter.inner" },
-		swap_previous = { ["<leader>A"] = "@parameter.inner" }
-	}
+		swap_previous = { ["<leader>A"] = "@parameter.inner" },
+	},
 }
 
 local playground = {
@@ -265,14 +261,21 @@ local playground = {
 		unfocus_language = "F",
 		update = "R",
 		goto_node = "<cr>",
-		show_help = "?"
-	}
+		show_help = "?",
+	},
 }
 
 local treesitter = {
 	-- Add languages to be installed here that you want installed for treesitter
 	ensure_installed = {
-		"c", "cpp", "go", "lua", "python", "rust", "typescript", "help"
+		"c",
+		"cpp",
+		"go",
+		"lua",
+		"python",
+		"rust",
+		"typescript",
+		"help",
 	},
 	matchup = { enable = true },
 	highlight = { enable = true },
@@ -283,11 +286,11 @@ local treesitter = {
 			init_selection = "<cr>",
 			scope_incremental = "<tab>",
 			node_incremental = "<cr>",
-			node_decremental = "<s-tab>"
-		}
+			node_decremental = "<s-tab>",
+		},
 	},
 	textobjects = textobjects,
-	playground = playground
+	playground = playground,
 }
 
 -- NvChad status line config from AstroNvim docs
@@ -422,20 +425,7 @@ local plugins = {
 			"nkrkv/nvim-treesitter-rescript",
 			["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
 			["LhKipp/nvim-nu"] = { ft = "nu" },
-			["nvim-neorg/neorg"] = {
-				config = function()
-					require('neorg').setup {
-						load = {
-							["core.defaults"] = {}, -- Loads default behaviour
-							["core.norg.concealer"] = {}, -- Adds pretty icons to your documents
-							["core.norg.dirman"] = { config = { workspaces = { notes = "~/notes" } } }, -- Manages Neorg workspaces
-						},
-					}
-				end,
-				ft = "norg",
-				run = ":Neorg sync-parsers",
-				requires = "nvim-lua/plenary.nvim",
-			},
+			["nvim-neorg/neorg"] = { ft = "norg", run = ":Neorg sync-parsers", requires = "nvim-lua/plenary.nvim" },
 		}
 
 		-- Disable until it's fixed ig
@@ -444,7 +434,7 @@ local plugins = {
 		return vim.tbl_deep_extend("force", default_plugins, my_plugins)
 	end,
 	treesitter = treesitter,
-	heirline = plugin_heirline
+	heirline = plugin_heirline,
 }
 
 local updater = {
@@ -452,7 +442,7 @@ local updater = {
 	-- disable automatically reloading AstroNvim after an update
 	auto_reload = false,
 	-- disable automatically quitting AstroNvim after an update
-	auto_quit = false
+	auto_quit = false,
 }
 
 -- add new user interface icon
@@ -500,5 +490,5 @@ return {
 	updater = updater,
 	header = header,
 	diagnostics = { virtual_text = true, underline = true },
-	["which-key"] = { register = { v = { ["<leader>"] = { j = { name = "JSON" } } } } }
+	["which-key"] = { register = { v = { ["<leader>"] = { j = { name = "JSON" } } } } },
 }
