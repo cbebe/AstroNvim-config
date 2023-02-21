@@ -33,9 +33,6 @@ local function printDate()
 	vim.api.nvim_set_current_line(nline)
 end
 
-local ts_install, install = pcall(require, "nvim-treesitter.install")
-if ts_install then install.compilers = { "gcc" } end
-
 local mappings = {
 	n = {
 		-- neorg
@@ -83,6 +80,17 @@ local mappings = {
 }
 
 local function polish()
+	local ts_install, install = pcall(require, "nvim-treesitter.install")
+	if ts_install then
+		if vim.loop.os_uname().sysname == "Windows_NT" then
+			install.prefer_git = false
+			-- this is the only compiler that works for me on windows. embrace modernity
+			install.compilers = { "zig" }
+		end
+	else
+		print("could not load treesitter install")
+	end
+
 	-- Set autocommands
 	vim.api.nvim_create_user_command(
 		"OrganizeImports",
@@ -231,8 +239,8 @@ local textobjects = {
 	move = {
 		set_jumps = true,
 		enable = true, -- whether to set jumps in the jumplist
-		goto_next_start = { ["]m"] = "@function.outer", ["]]"] = "@class.outer" },
-		goto_next_end = { ["]M"] = "@function.outer", ["]["] = "@class.outer" },
+		goto_next_start = { ["]m"] = "@function.outer",["]]"] = "@class.outer" },
+		goto_next_end = { ["]M"] = "@function.outer",["]["] = "@class.outer" },
 		goto_previous_start = {
 			["[m"] = "@function.outer",
 			["[["] = "@class.outer",
