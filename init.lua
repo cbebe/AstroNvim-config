@@ -38,6 +38,9 @@ if ts_install then install.compilers = { "gcc" } end
 
 local mappings = {
 	n = {
+		-- neorg
+		["<leader>nn"] = { "<cmd>Neorg index<cr>", desc = "Open Neorg index" },
+		["<leader>nr"] = { "<cmd>Neorg return<cr>", desc = "Close all neorg buffers" },
 		-- hover
 		["gh"] = { hover.hover, desc = "hover.nvim" },
 		["gH"] = { hover.hover_select, desc = "hover.nvim (select)" },
