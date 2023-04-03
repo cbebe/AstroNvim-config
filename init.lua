@@ -20,11 +20,32 @@ local function printDate()
 	vim.api.nvim_set_current_line(nline)
 end
 
+local function setupNeorg()
+	local neorg_ok, neorg = pcall(require, "neorg")
+	if neorg_ok then
+		neorg.setup {
+			load = {
+				["core.defaults"] = {}, -- Loads default behaviour
+				["core.norg.concealer"] = {}, -- Adds pretty icons to your documents
+				["core.norg.dirman"] = {
+					config = {
+						workspaces = { notes = "~/notes" },
+						default_workspace = "notes",
+					},
+				}, -- Manages Neorg workspaces
+			},
+		}
+	else
+		print('error loading neorg')
+	end
+end
+
 local mappings = {
 	n = {
 		-- neorg
 		["<leader>no"] = { "<cmd>edit ~/notes/index.norg<cr>", desc = "Open Neorg index" },
 		["<leader>nr"] = { "<cmd>Neorg return<cr>", desc = "Close all neorg buffers" },
+		["<leader>nl"] = { setupNeorg, desc = "Setup Neorg" },
 
 		-- hover
 		["gh"] = { hover.hover, desc = "hover.nvim" },
@@ -100,22 +121,6 @@ local function polish()
 		callback = function() vim.diagnostic.open_float(nil, { focus = false }) end,
 	})
 
-	local neorg_ok, neorg = pcall(require, "neorg")
-	if neorg_ok then
-		neorg.setup {
-			load = {
-				["core.defaults"] = {}, -- Loads default behaviour
-				["core.norg.concealer"] = {}, -- Adds pretty icons to your documents
-				["core.norg.dirman"] = {
-					config = {
-						workspaces = { notes = "~/notes" },
-						default_workspace = "notes",
-					},
-				}, -- Manages Neorg workspaces
-			},
-		}
-	end
-
 	local notify_ok, notify = pcall(require, "notify")
 	if notify_ok then pcall(notify.setup, { background_colour = "#000000" }) end
 
@@ -170,6 +175,13 @@ local function polish()
 			local nu_ok, nu = pcall(require, "nu")
 			if nu_ok then nu.setup {} end
 		end,
+	})
+
+	-- Run Neorg
+	vim.api.nvim_create_autocmd("BufWinEnter", {
+		desc = "Setup Neorg",
+		pattern = "*.norg",
+		callback = setupNeorg,
 	})
 
 	-- Run go
