@@ -67,23 +67,6 @@ local mappings = {
 	t = { ["<esc><esc>"] = { "<C-\\><C-n>" } },
 }
 
-local harpoon_ok, harpoon = pcall(require, 'harpoon')
-if harpoon_ok then
-	harpoon.setup {}
-	local ui = require('harpoon.ui')
-	local mark = require('harpoon.mark')
-	mappings.n["<leader>ha"] = { mark.add_file, desc = "[h]arpoon [a]dd file" }
-	mappings.n["<leader>hr"] = { mark.rm_file, desc = "[h]arpoon [r]emove file" }
-	mappings.n["<leader>hm"] = { ui.toggle_quick_menu, desc = "[h]arpoon Quick [m]enu" }
-	mappings.n["<leader>hn"] = { ui.nav_next, desc = "[h]arpoon [n]ext file" }
-	mappings.n["<leader>hp"] = { ui.nav_prev, desc = "[h]arpoon [p]revious file" }
-	mappings.n["<leader>h1"] = { function() ui.nav_file(1) end, desc = "[h]arpoon [1]st file" }
-	mappings.n["<leader>h2"] = { function() ui.nav_file(2) end, desc = "[h]arpoon [2]nd file" }
-	mappings.n["<leader>h3"] = { function() ui.nav_file(3) end, desc = "[h]arpoon [3]rd file" }
-	mappings.n["<leader>h4"] = { function() ui.nav_file(4) end, desc = "[h]arpoon [4]th file" }
-else
-	print('could not load harpoon')
-end
 
 local function polish()
 	local ts_install, install = pcall(require, "nvim-treesitter.install")
@@ -226,6 +209,24 @@ local function polish()
 
 	local telescope_ok, telescope = pcall(require, "telescope")
 	if telescope_ok then pcall(telescope.load_extension, "emoji") end
+
+	local harpoon_ok, harpoon = pcall(require, 'harpoon')
+	if harpoon_ok then
+		harpoon.setup {}
+		local ui = require('harpoon.ui')
+		local mark = require('harpoon.mark')
+		vim.keymap.set('n', "<leader>ha", mark.add_file, { desc = '[h]arpoon [a]dd file' })
+		vim.keymap.set('n', "<leader>hr", mark.rm_file, { desc = '[h]arpoon [r]emove file' })
+		vim.keymap.set('n', "<leader>hm", ui.toggle_quick_menu, { desc = '[h]arpoon [m]enu' })
+		vim.keymap.set('n', "<leader>hn", ui.nav_next, { desc = '[h]arpoon [n]ext' })
+		vim.keymap.set('n', "<leader>hp", ui.nav_prev, { desc = '[h]arpoon [p]revious' })
+		vim.keymap.set('n', "<leader>h1", function() ui.nav_file(1) end, { desc = '[h]arpoon [1]st file' })
+		vim.keymap.set('n', "<leader>h2", function() ui.nav_file(2) end, { desc = '[h]arpoon [2]nd file' })
+		vim.keymap.set('n', "<leader>h3", function() ui.nav_file(3) end, { desc = '[h]arpoon [3]rd file' })
+		vim.keymap.set('n', "<leader>h4", function() ui.nav_file(4) end, { desc = '[h]arpoon [4]th file' })
+	else
+		print('could not load harpoon')
+	end
 end
 
 local plugins = {
@@ -243,7 +244,7 @@ local plugins = {
 			"lewis6991/hover.nvim",
 			"nvim-treesitter/playground",
 			"nkrkv/nvim-treesitter-rescript",
-			"ThePrimeagen/harpoon",
+			["ThePrimeagen/harpoon"] = { requires = "nvim-lua/plenary.nvim" },
 			["nvim-treesitter/nvim-treesitter-textobjects"] = { after = "nvim-treesitter" },
 			["LhKipp/nvim-nu"] = { ft = "nu" },
 			["nvim-neorg/neorg"] = { ft = "norg", run = ":Neorg sync-parsers", requires = "nvim-lua/plenary.nvim" },
