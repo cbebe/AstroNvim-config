@@ -25,6 +25,7 @@ local mappings = {
 		-- neorg
 		["<leader>no"] = { "<cmd>edit ~/notes/index.norg<cr>", desc = "Open Neorg index" },
 		["<leader>nr"] = { "<cmd>Neorg return<cr>", desc = "Close all neorg buffers" },
+
 		-- hover
 		["gh"] = { hover.hover, desc = "hover.nvim" },
 		["gH"] = { hover.hover_select, desc = "hover.nvim (select)" },
@@ -48,7 +49,7 @@ local mappings = {
 			desc = "Change current directory to the file in the buffer",
 		},
 		["<leader>tt"] = { vim.g.user_terminal_cmd, desc = "Open terminal" },
-		["<leader>rs"] = {
+		["<leader>R"] = {
 			[[<cmd>let _s=@/ | %s/\s\+$//e | let @/=_s | nohl | unlet _s<cr>]],
 			desc = "Remove all trailing whitespace",
 		},
@@ -66,6 +67,24 @@ local mappings = {
 	t = { ["<esc><esc>"] = { "<C-\\><C-n>" } },
 }
 
+local harpoon_ok, harpoon = pcall(require, 'harpoon')
+if harpoon_ok then
+	harpoon.setup {}
+	local ui = require('harpoon.ui')
+	local mark = require('harpoon.mark')
+	mappings.n["<leader>ha"] = { mark.add_file, desc = "[h]arpoon [a]dd file" }
+	mappings.n["<leader>hr"] = { mark.rm_file, desc = "[h]arpoon [r]emove file" }
+	mappings.n["<leader>hm"] = { ui.toggle_quick_menu, desc = "[h]arpoon Quick [m]enu" }
+	mappings.n["<leader>hn"] = { ui.nav_next, desc = "[h]arpoon [n]ext file" }
+	mappings.n["<leader>hp"] = { ui.nav_prev, desc = "[h]arpoon [p]revious file" }
+	mappings.n["<leader>h1"] = { function() ui.nav_file(1) end, desc = "[h]arpoon [1]st file" }
+	mappings.n["<leader>h2"] = { function() ui.nav_file(2) end, desc = "[h]arpoon [2]nd file" }
+	mappings.n["<leader>h3"] = { function() ui.nav_file(3) end, desc = "[h]arpoon [3]rd file" }
+	mappings.n["<leader>h4"] = { function() ui.nav_file(4) end, desc = "[h]arpoon [4]th file" }
+else
+	print('could not load harpoon')
+end
+
 local function polish()
 	local ts_install, install = pcall(require, "nvim-treesitter.install")
 	if ts_install then
@@ -77,6 +96,7 @@ local function polish()
 	else
 		print("could not load treesitter install")
 	end
+
 
 	-- Set autocommands
 	vim.api.nvim_create_user_command(
@@ -248,5 +268,13 @@ return {
 	updater = extras.updater,
 	header = extras.header,
 	diagnostics = { virtual_text = true, underline = true },
-	["which-key"] = { register = { v = { ["<leader>"] = { j = { name = "JSON" } } } } },
+	["which-key"] = {
+		register = {
+			v = { ["<leader>"] = { j = { name = "JSON" } } },
+			n = { ["<leader>"] = {
+				h = { name = "Harpoon" },
+				n = { name = "Neorg" },
+			} },
+		}
+	},
 }
