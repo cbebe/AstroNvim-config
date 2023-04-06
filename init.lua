@@ -46,6 +46,7 @@ local mappings = {
 		["<leader>no"] = { "<cmd>edit ~/notes/index.norg<cr>", desc = "Open Neorg index" },
 		["<leader>nr"] = { "<cmd>Neorg return<cr>", desc = "Close all neorg buffers" },
 		["<leader>nl"] = { setupNeorg, desc = "Setup Neorg" },
+		["<leader>ni"] = { "<cmd>Neorg inject-metadata<cr>", desc = "Inject metadata" },
 
 		-- hover
 		["gh"] = { hover.hover, desc = "hover.nvim" },
