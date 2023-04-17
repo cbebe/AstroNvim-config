@@ -48,6 +48,8 @@ local mappings = {
 		["<leader>nl"] = { setupNeorg, desc = "Setup Neorg" },
 		["<leader>ni"] = { "<cmd>Neorg inject-metadata<cr>", desc = "Inject metadata" },
 
+		["<leader>O"] = { "<cmd>edit %<cr>", desc = "Reopen file" },
+
 		-- hover
 		["gh"] = { hover.hover, desc = "hover.nvim" },
 		["gH"] = { hover.hover_select, desc = "hover.nvim (select)" },
