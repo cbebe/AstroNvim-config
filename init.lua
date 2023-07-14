@@ -247,6 +247,7 @@ end
 local plugins = {
 	init = function(default_plugins)
 		local my_plugins = {
+			"windwp/nvim-ts-autotag",
 			"xiyaowong/telescope-emoji.nvim",
 			"catppuccin/nvim",
 			"lambdalisue/suda.vim",

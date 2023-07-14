@@ -258,6 +258,7 @@ local plugin_treesitter = {
 	},
 	textobjects = textobjects,
 	playground = playground,
+	autotag = { enable = true },
 }
 
 return {
