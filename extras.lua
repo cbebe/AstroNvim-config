@@ -67,6 +67,7 @@ local plugin_heirline = function(config)
 		-- fill the rest of the statusline
 		-- the elements after this will appear on the right of the statusline
 		astronvim.status.component.fill(),
+		astronvim.status.component.macro_recording(),
 		-- add a component for the current diagnostics if it exists and use the right separator for the section
 		astronvim.status.component.diagnostics { surround = { separator = "right" } },
 		-- add a component to display LSP clients, disable showing LSP progress, and use the right separator
